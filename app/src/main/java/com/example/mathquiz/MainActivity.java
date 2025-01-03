@@ -1,109 +1,121 @@
 package com.example.mathquiz;
 
-
-import android.app.AlertDialog;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvQuestion;
-    private LinearLayout llOptions;
-    private Button btnChangeOptions;
-
-    private int correctAnswer; // התשובה הנכונה
-    private int numOptions = 4; // ברירת מחדל של כמות האפשרויות
-    private Random random = new Random(); // אובייקט רנדומליות
+    // משתנים גלובליים
+    private TextView questionTextView, scoreTextView;
+    private Button option1Button, option2Button, option3Button, option4Button;
+    private int correctAnswer, score = 0, totalQuestions = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // אתחול רכיבים מה-XML
-        tvQuestion = findViewById(R.id.tv_question);
-        llOptions = findViewById(R.id.ll_options);
-        btnChangeOptions = findViewById(R.id.btn_change_options);
+        // חיבור אלמנטים מה-XML
+        questionTextView = findViewById(R.id.questionTextView);
+        scoreTextView = findViewById(R.id.scoreTextView);
+        option1Button = findViewById(R.id.option1Button);
+        option2Button = findViewById(R.id.option2Button);
+        option3Button = findViewById(R.id.option3Button);
+        option4Button = findViewById(R.id.option4Button);
 
-        // התחלת השאלה הראשונה
-        startNewQuestion();
+        // יצירת השאלה הראשונה
+        generateQuestion();
 
-        // כפתור לשינוי כמות האפשרויות
-        btnChangeOptions.setOnClickListener(v -> showOptionsDialog());
-    }
-
-    // פונקציה שמתחילה שאלה חדשה
-    private void startNewQuestion() {
-        llOptions.removeAllViews(); // מנקה את האפשרויות הקודמות
-
-        // קביעת סוג השאלה - כפל או חזקה
-        boolean isPowerQuestion = random.nextBoolean();
-        int a = random.nextInt(10) + 1; // מספר ראשון (1-10)
-        int b = random.nextInt(4) + 2;  // מספר שני (חזקה 2-5 או כפל 2-10)
-
-        if (isPowerQuestion) {
-            correctAnswer = (int) Math.pow(a, b); // חישוב חזקה
-            tvQuestion.setText(a + " ^ " + b); // הצגת שאלה של חזקה
-        } else {
-            correctAnswer = a * b; // חישוב כפל
-            tvQuestion.setText(a + " * " + b); // הצגת שאלה של כפל
-        }
-
-        // יצירת אפשרויות תשובה
-        List<Integer> options = generateOptions(correctAnswer, numOptions);
-        for (int option : options) {
-            Button btnOption = new Button(this);
-            btnOption.setText(String.valueOf(option));
-            btnOption.setOnClickListener(v -> checkAnswer(option)); // מאזין ללחיצה
-            llOptions.addView(btnOption); // הוספת הכפתור ל-LinearLayout
-        }
-    }
-
-    // פונקציה שיוצרת רשימה של אפשרויות תשובה עם אחת נכונה
-    private List<Integer> generateOptions(int correctAnswer, int numOptions) {
-        List<Integer> options = new ArrayList<>();
-        options.add(correctAnswer); // מוסיף את התשובה הנכונה
-
-        while (options.size() < numOptions) {
-            int fakeAnswer = random.nextInt(500) + 1; // מספר רנדומלי (1-500)
-            if (!options.contains(fakeAnswer)) {
-                options.add(fakeAnswer); // מוסיף רק אם לא קיים
+        // האזנה ללחיצות על כפתורי תשובות
+        View.OnClickListener answerClickListener = v -> {
+            Button clickedButton = (Button) v;
+            int selectedAnswer = Integer.parseInt(clickedButton.getText().toString());
+            if (selectedAnswer == correctAnswer) {
+                score++;
             }
-        }
-        Collections.shuffle(options); // מערבב את הרשימה
-        return options;
+            totalQuestions++;
+            updateScore();
+            generateQuestion();
+        };
+
+        option1Button.setOnClickListener(answerClickListener);
+        option2Button.setOnClickListener(answerClickListener);
+        option3Button.setOnClickListener(answerClickListener);
+        option4Button.setOnClickListener(answerClickListener);
     }
 
-    // פונקציה לבדיקת תשובה בלחיצה על כפתור
-    private void checkAnswer(int userAnswer) {
-        if (userAnswer == correctAnswer) {
-            Toast.makeText(this, "תשובה נכונה!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "תשובה שגויה! התשובה הנכונה היא: " + correctAnswer, Toast.LENGTH_LONG).show();
+    // פונקציה ליצירת שאלה חדשה
+    private void generateQuestion() {
+        Random random = new Random();
+        int num1 = random.nextInt(20) + 1; // מספר ראשון
+        int num2 = random.nextInt(20) + 1; // מספר שני
+        int operation = random.nextInt(4); // 0: חיבור, 1: חיסור, 2: כפל, 3: חילוק
+
+        switch (operation) {
+            case 0: // חיבור
+                correctAnswer = num1 + num2;
+                questionTextView.setText(num1 + " + " + num2);
+                break;
+            case 1: // חיסור
+                correctAnswer = num1 - num2;
+                questionTextView.setText(num1 + " - " + num2);
+                break;
+            case 2: // כפל
+                correctAnswer = num1 * num2;
+                questionTextView.setText(num1 + " × " + num2);
+                break;
+            case 3: // חילוק
+                correctAnswer = num1; // התוצאה תהיה מספר שלם
+                questionTextView.setText((num1 * num2) + " ÷ " + num2);
+                break;
         }
-        startNewQuestion(); // מעביר לשאלה הבאה
+
+        // יצירת תשובות אפשריות
+        int[] answers = generateAnswers(correctAnswer);
+        option1Button.setText(String.valueOf(answers[0]));
+        option2Button.setText(String.valueOf(answers[1]));
+        option3Button.setText(String.valueOf(answers[2]));
+        option4Button.setText(String.valueOf(answers[3]));
     }
 
-    // דיאלוג לשינוי מספר האפשרויות
-    private void showOptionsDialog() {
-        String[] options = {"3", "4", "5", "6", "7", "8"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("בחר כמות אפשרויות תשובה:");
-        builder.setItems(options, (dialog, which) -> {
-            numOptions = Integer.parseInt(options[which]);
-            startNewQuestion(); // אתחול מחדש עם מספר אפשרויות חדש
-        });
-        builder.show();
+    // פונקציה ליצירת תשובות אפשריות
+    private int[] generateAnswers(int correctAnswer) {
+        Random random = new Random();
+        int[] answers = new int[4];
+        answers[0] = correctAnswer;
+
+        for (int i = 1; i < 4; i++) {
+            int wrongAnswer = 0;
+            boolean foundWrongAnswer = false; // משתנה כדי לדעת אם מצאנו תשובה שגויה שמופיעה כבר
+            while (!foundWrongAnswer) {
+                wrongAnswer = correctAnswer + random.nextInt(20) - 10; // תשובה שגויה קרובה
+                foundWrongAnswer = true;
+                // בדיקה אם wrongAnswer כבר מופיעה במערך
+                for (int j = 0; j < i; j++) {
+                    if (answers[j] == wrongAnswer) {
+                        foundWrongAnswer = false; // אם התשובה כבר קיימת, נמשיך לחפש תשובה אחרת
+                        break;
+                    }
+                }
+            }
+            answers[i] = wrongAnswer;
+        }
+
+        // ערבוב התשובות
+        Collections.shuffle(Arrays.asList(answers));
+        return answers;
+    }
+
+    // עדכון ניקוד
+    private void updateScore() {
+        scoreTextView.setText("Score: " + score + "/" + totalQuestions);
     }
 }
-

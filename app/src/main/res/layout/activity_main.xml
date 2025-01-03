@@ -1,40 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- שאלה -->
-
-    <!-- אפשרויות תשובה -->
+    <!-- תצוגת הניקוד -->
     <TextView
-        android:id="@+id/tv_question"
+        android:id="@+id/scoreTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="16dp"
-        android:text="השאלה תוצג כאן"
+        android:text="Score: 0/0"
+        android:textSize="18sp"
+        android:layout_gravity="center"/>
+
+    <!-- תצוגת השאלה -->
+    <TextView
+        android:id="@+id/questionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Question"
         android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"/>
 
-    <!-- כפתור שינוי כמות התשובות -->
-
-    <LinearLayout
-        android:id="@+id/ll_options"
+    <!-- כפתורים לתשובות -->
+    <Button
+        android:id="@+id/option1Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical" />
+        android:layout_marginTop="16dp"
+        android:text="Option 1"/>
 
     <Button
-        android:id="@+id/btn_change_options"
-        android:layout_width="wrap_content"
+        android:id="@+id/option2Button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="20dp"
-        android:text="שנה כמות אפשרויות" />
+        android:layout_marginTop="8dp"
+        android:text="Option 2"/>
+
+    <Button
+        android:id="@+id/option3Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Option 3"/>
+
+    <Button
+        android:id="@+id/option4Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Option 4"/>
 
 </LinearLayout>
-
-
